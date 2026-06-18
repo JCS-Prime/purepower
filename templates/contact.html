@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — PurePower Philippines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}">
+    <style>
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a class="nav-logo" href="/">⚡ PurePower</a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="/contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- CONTACT HERO -->
+    <section class="hero">
+        <h1>Get In Touch 📩</h1>
+        <p>Interested in our products? Send us an inquiry and we'll get back to you ASAP.</p>
+    </section>
+
+    <!-- CONTACT FORM -->
+    <section class="section">
+        <div class="contact-form">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="name" placeholder="Juan dela Cruz" />
+            </div>
+            <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="email" placeholder="juan@email.com" />
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="phone" placeholder="09XX XXX XXXX" />
+            </div>
+            <div class="form-group">
+                <label>Interested In *</label>
+                <select id="product">
+                    <option value="">-- Select Product --</option>
+                    <option value="Lishen LS314K LiFePO4 Cell">Lishen LS314K LiFePO4 Cell</option>
+                    <option value="Gospower GPEO Series Inverter">Gospower GPEO Series Inverter</option>
+                    <option value="Both Products">Both Products</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Message *</label>
+                <textarea id="message" placeholder="Tell us about your solar needs..."></textarea>
+            </div>
+
+            <button class="submit-btn" onclick="submitInquiry()">Send Inquiry ⚡</button>
+
+            <div class="status-msg" id="statusMsg"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 PurePower Philippines. All rights reserved.</p>
+    </footer>
+
+    <!-- CHAT WIDGET -->
+    <div class="chat-widget">
+        <div class="chat-box" id="chatBox">
+            <div class="chat-header">
+                ☀️ PurePower AI Assistant
+                <span>Ask me anything about solar!</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    Hi! I'm your PurePower solar expert. How can I help you? 😊
+                </div>
+            </div>
+            <div class="chat-input">
+                <input
+                    type="text"
+                    id="userInput"
+                    placeholder="Ask a solar question..."
+                    onkeypress="handleKey(event)"
+                />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+        <button class="chat-toggle" onclick="toggleChat()">💬</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script>
+        async function submitInquiry() {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const product = document.getElementById("product").value;
+            const message = document.getElementById("message").value.trim();
+            const statusMsg = document.getElementById("statusMsg");
+
+            if (!name || !email || !product || !message) {
+                statusMsg.className = "status-msg error";
+                statusMsg.style.display = "block";
+                statusMsg.textContent = "Please fill in all required fields.";
+                return;
+            }
+
+            const response = await fetch("/submit-inquiry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, phone, product, message })
+            });
+
+            const data = await response.json();
+
+            if (data.status === "success") {
+                statusMsg.className = "status-msg success";
+                statusMsg.textContent = "✅ Inquiry sent! We'll get back to you soon.";
+                // Clear form
+                document.getElementById("name").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("product").value = "";
+                document.getElementById("message").value = "";
+            } else {
+                statusMsg.className = "status-msg error";
+                statusMsg.textContent = "❌ Something went wrong. Please try again.";
+            }
+
+            statusMsg.style.display = "block";
+        }
+    </script>
+</body>
+</html>
